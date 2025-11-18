@@ -1,1 +1,25 @@
 @import "tailwindcss";
+
+@font-face {
+    font-family: "Oswald";
+    src: url("fonts/Oswald/Oswald-VariableFont_wght.ttf");
+}
+
+@layer base {
+
+    body {
+        padding: 15px;
+        background-color: #0A1E38;
+        color: #F5EFF7;
+        font-family: 'Oswald';
+    }
+
+    * {
+        font-family: inherit;
+        color: inherit;
+    }
+
+    table tbody tr td {
+        background-color: transparent;
+    }
+}
