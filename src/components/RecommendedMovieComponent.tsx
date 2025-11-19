@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import type { Movie } from "../models/Movie";
+import type { RecommendedMovie } from "../models/Movie";
 import MinutesToHoursConverter from "../utils/timeConverter";
 
-export default function MovieElement({ movie }: Readonly<{ movie: Movie }>) {
+export default function RecommendedMovieComponent({ movie }: Readonly<{ movie: RecommendedMovie }>) {
   	const [hours, setHours] = useState(0);
   	const [minutes, setMinutes] = useState(0);
 

@@ -1,18 +1,27 @@
 import { useEffect, useState } from "react";
-import MovieElement from "./components/MovieElement";
-import { getRecommendedMovies, getUsers } from "./services/apiService"
-import type { Movie } from "./models/Movie";
+import { getRecommendedMovies, getExplainedMovies, getUsers } from "./services/apiService"
+import type { RecommendedMovie, ExplainedMovie } from "./models/Movie";
+import PredictionList from "./components/PredictionList";
+import ExplanationList from "./components/ExplanationList";
 
 export default function App() {
 
 	const [allUserIds, setAllUserIds] = useState<number[]>([])
   	const [userId, setUserId] = useState(0);
-	const [movies, setMovies] = useState<Movie[]>([]);
+	const [recommendedMovies, setRecommendedMovies] = useState<RecommendedMovie[]>([]);
+	const [explainedMovies, setExplainedMovies] = useState<ExplainedMovie[]>([]);
 
   	const getMovies = async () => {
-		const response = await getRecommendedMovies(userId);
+		if(userId != 0) {
+			const recommendation = await getRecommendedMovies(userId);
+			setRecommendedMovies(recommendation)
 
-		console.log(response)
+			const movieIds = recommendation.map((r: any) => r.movieId)
+
+			const explanation = await getExplainedMovies({userId, movieIds})
+			setExplainedMovies(explanation)
+		}
+
   	};
 
 	const getUserIds = async () => {
@@ -46,23 +55,9 @@ export default function App() {
 				</button>
 	  		</div>
 
-	  		<div className="bg-[#0f2a4a] p-6 rounded-xl shadow-xl mx-auto">
-				<table className="w-full border-collapse">
-		  		<thead>
-					<tr>
-						<th className="py-5 text-left ps-2">Titre</th>
-						<th className="py-5 text-left">Année</th>
-						<th className="py-5 text-left">Genres</th>
-						<th className="py-5 text-left">Durée</th>
-					</tr>
-		  		</thead>
-		  		<tbody>
-					{movies.map((movie) => {
-			  			return <MovieElement key={movie.imdb_id} movie={movie} />;
-					})}
-		  		</tbody>
-				</table>
-	  		</div>
+	  		<PredictionList movies={recommendedMovies} />
+
+			<ExplanationList movies={explainedMovies} />
 		</>
   	);
 }
