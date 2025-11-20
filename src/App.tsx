@@ -1,25 +1,19 @@
 import { useEffect, useState } from "react";
-import { getRecommendedMovies, getExplainedMovies, getUsers } from "./services/apiService"
-import type { RecommendedMovie, ExplainedMovie } from "./models/Movie";
+import { getRecommendedMovies, getUsers } from "./services/apiService"
+import type { Movie } from "./models/Movie";
 import PredictionList from "./components/PredictionList";
-import ExplanationList from "./components/ExplanationList";
 
 export default function App() {
 
 	const [allUserIds, setAllUserIds] = useState<number[]>([])
   	const [userId, setUserId] = useState(0);
-	const [recommendedMovies, setRecommendedMovies] = useState<RecommendedMovie[]>([]);
-	const [explainedMovies, setExplainedMovies] = useState<ExplainedMovie[]>([]);
+	const [movies, setMovies] = useState<Movie[]>([]);
 
   	const getMovies = async () => {
 		if(userId != 0) {
-			const recommendation = await getRecommendedMovies(userId);
-			setRecommendedMovies(recommendation)
-
-			const movieIds = recommendation.map((r: any) => r.movieId)
-
-			const explanation = await getExplainedMovies({userId, movieIds})
-			setExplainedMovies(explanation)
+			const returnedMovies = await getRecommendedMovies(userId);
+			console.log(returnedMovies)
+			setMovies(returnedMovies)
 		}
 
   	};
@@ -55,9 +49,7 @@ export default function App() {
 				</button>
 	  		</div>
 
-	  		<PredictionList movies={recommendedMovies} />
-
-			<ExplanationList movies={explainedMovies} />
+	  		<PredictionList movies={movies} />
 		</>
   	);
 }

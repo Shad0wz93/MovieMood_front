@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { ExplainedMovie } from "../models/Movie";
+import type { ExplainedMovie, Movie, RecommendedMovie } from "../models/Movie";
 
 export async function getUsers() {
 
@@ -27,10 +27,10 @@ export async function getRecommendedMovies(userId: number) {
 			"user_id": userId
 		}
 
-        const response = await axios.post("http://127.0.0.1:8000/api/v1/predict", requestBody);
+        const recommendedMovies = await axios.post("http://127.0.0.1:8000/api/v1/predict", requestBody);
 
-		const clean = response.data.recommendations.map(item => {
-			const fixed = item.genres.replace(/'/g, '"');
+		const cleanRecommendedMovies = recommendedMovies.data.recommendations.map((item: any) => {
+			const fixed = item.genres.replaceAll('\'', '"');
 			
 			const genresArray = JSON.parse(fixed);
 
@@ -42,18 +42,22 @@ export async function getRecommendedMovies(userId: number) {
 			};
 		});
 
-		console.log(clean)
+		const movieIds = cleanRecommendedMovies.map((r: any) => r.movieId)
 
-        return clean;
+		const explainedMovies = await getExplainedMovies({ userId, movieIds })
+
+		const movies: Movie[] = mergeMovies(cleanRecommendedMovies, explainedMovies)
+
+        return movies;
 
     }
     catch(error: any) {
-
+		return []
     }
 
 }
 
-export async function getExplainedMovies({ userId, movieIds }: { userId: number, movieIds: number[] }) {
+async function getExplainedMovies({ userId, movieIds }: { userId: number, movieIds: number[] }) {
 
     try {
 
@@ -63,13 +67,10 @@ export async function getExplainedMovies({ userId, movieIds }: { userId: number,
 			"user_id": userId
 		}
 
-		console.log(requestBody)
-
         const response = await axios.post("http://127.0.0.1:8000/api/v1/explain", requestBody);
 
-		console.log(response.data)
-
 		const explainedMovies: ExplainedMovie[] = response.data.explanations.map((movie: any) => ({
+			movieId: movie.movieId,
 			title: movie.title,
 			logisticScore: movie.scores.logistic,
 			svdScore: movie.scores.svd,
@@ -85,4 +86,29 @@ export async function getExplainedMovies({ userId, movieIds }: { userId: number,
 		return []
     }
 
+}
+
+function mergeMovies(
+  recommended: RecommendedMovie[],
+  explained: ExplainedMovie[]
+): Movie[] {
+
+  const explainedMap = new Map<number, ExplainedMovie>();
+  for (const e of explained) {
+    explainedMap.set(e.movieId, e);
+  }
+
+  const merged: Movie[] = recommended
+    .map((rec) => {
+      const expl = explainedMap.get(rec.movieId);
+      if (!expl) return null;
+      return {
+        movieId: rec.movieId,
+        recommendationDetails: rec,
+        explanation: expl
+      };
+    })
+    .filter((m): m is Movie => m !== null);
+
+  return merged;
 }

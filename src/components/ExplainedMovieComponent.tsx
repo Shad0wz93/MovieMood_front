@@ -4,14 +4,19 @@ export default function ExplainedMovieComponent({ movie }: Readonly<{ movie: Exp
 
     return (
         
-        <tr className="border-y hover:bg-[#143a63] transition">
-            <td className="py-5 font-bold ps-2">{movie.title}</td>
-            <td className="py-5 ps-2">
-                Score logistique : {movie.logisticScore} <br />
-                Score svd : {movie.svdScore} <br />
-                Score hybride : {movie.hybridScore}
-            </td>
-            <td className="py-5 ps-2">{movie.interpretation}</td>
-        </tr>
+        <div className="p-4 rounded-xl space-y-3">
+            <h3 className="text-lg font-semibold text-white">Explications</h3>
+
+            <div className="flex flex-col gap-2 text-sm">
+
+                <div className="flex flex-wrap gap-4 text-blue-200">
+                    <span>Score logistique : <b>{movie.logisticScore}</b></span>
+                    <span>Score SVD : <b>{movie.svdScore}</b></span>
+                    <span>Score hybride : <b>{movie.hybridScore}</b></span>
+                </div>
+
+                <p className="text-blue-100 leading-relaxed">{movie.interpretation}</p>
+            </div>
+        </div>
   );
 }
