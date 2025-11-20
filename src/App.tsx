@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
-import { getRecommendedMovies, getUsers } from "./services/apiService"
+import { getRecommendedMovies, getUsers } from "./services/movieService"
 import type { Movie } from "./models/Movie";
 import PredictionList from "./components/PredictionList";
+import { Toaster } from "./components/shadcn/sonner";
+import HealthCheckButton from "./components/HealthCheckButton";
 
 export default function App() {
 
@@ -44,12 +46,16 @@ export default function App() {
 					}
 				</select>
 
-				<button onClick={getMovies} className="bg-blue-600 hover:bg-blue-700 transition px-4 py-2 rounded-lg font-semibold">
+				<button onClick={getMovies} className="bg-blue-600 hover:bg-blue-700 transition px-4 py-2 rounded-lg font-semibold cursor-pointer">
 		  			Lancer la recherche
 				</button>
 	  		</div>
 
 	  		<PredictionList movies={movies} />
+
+			<HealthCheckButton />
+
+			<Toaster />
 		</>
   	);
 }

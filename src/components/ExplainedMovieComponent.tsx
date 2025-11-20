@@ -10,9 +10,7 @@ export default function ExplainedMovieComponent({ movie }: Readonly<{ movie: Exp
             <div className="flex flex-col gap-2 text-sm">
 
                 <div className="flex flex-wrap gap-4 text-blue-200">
-                    <span>Score logistique : <b>{movie.logisticScore}</b></span>
-                    <span>Score SVD : <b>{movie.svdScore}</b></span>
-                    <span>Score hybride : <b>{movie.hybridScore}</b></span>
+                    <span>Score : <b>{movie.hybridScore}</b></span>
                 </div>
 
                 <p className="text-blue-100 leading-relaxed">{movie.interpretation}</p>
